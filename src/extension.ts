@@ -39,9 +39,25 @@ function formatIncludes(document: vscode.TextDocument): string {
 	return newText;
 }
 
+function fromatElseIf(text: string): string {
+	let indexOfElse = 0;
+	while (text.indexOf("else", indexOfElse) !== -1) {
+		indexOfElse = text.indexOf("else", indexOfElse);
+		let indexOfBracket = indexOfElse;
+		while (text[indexOfBracket] !== '}') {
+			indexOfBracket--;
+		}
+		let space = indexOfElse - indexOfBracket;
+		text = text.slice(0, indexOfBracket + 1) + " " + text.slice(indexOfElse);
+		indexOfElse = indexOfBracket + 5;
+	}
+	return text;
+}
+
 function formatDocument(document: vscode.TextDocument): string {
 	let newText = formatIncludes(document);
 
+	newText = fromatElseIf(newText);
 	if (!document.lineAt(document.lineCount - 1).isEmptyOrWhitespace) {
 		newText += "\n";
 	}
