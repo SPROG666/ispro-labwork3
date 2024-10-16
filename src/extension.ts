@@ -54,10 +54,18 @@ function fromatElseIf(text: string): string {
 	return text;
 }
 
+function formatBracket(text: string): string {
+	text = text.replaceAll(/ *\{/g, ' {');
+	text = text.replaceAll(/if *\(/g, 'if (');
+	text = text.replaceAll(/else if *\(/g, 'else if (');
+	return text;
+}
+
 function formatDocument(document: vscode.TextDocument): string {
 	let newText = formatIncludes(document);
 
 	newText = fromatElseIf(newText);
+	newText = formatBracket(newText);
 	if (!document.lineAt(document.lineCount - 1).isEmptyOrWhitespace) {
 		newText += "\n";
 	}
