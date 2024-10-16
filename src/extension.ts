@@ -58,6 +58,8 @@ function formatBracket(text: string): string {
 	text = text.replaceAll(/ *\{/g, ' {');
 	text = text.replaceAll(/if *\(/g, 'if (');
 	text = text.replaceAll(/else if *\(/g, 'else if (');
+	text = text.replaceAll(/for *\(/g, 'for (');
+	text = text.replaceAll(/switch *\(/g, 'switch (');
 	return text;
 }
 
