@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "labwork3.helloWorld",
-        "title": "Hello World"
+        "command": "labwork3.runrunrun",
+        "title": "labwork3"
       }
     ]
   },

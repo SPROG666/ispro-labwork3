@@ -77,7 +77,7 @@ function formatDocument(document: vscode.TextDocument): string {
 
 export function activate(context: vscode.ExtensionContext) {
 	
-	const disposable = vscode.commands.registerCommand('labwork3.helloWorld', () => {
+	const disposable = vscode.commands.registerCommand('labwork3.runrunrun', () => {
 		const activeEditor = vscode.window.activeTextEditor;
 		if(!activeEditor) {
 			vscode.window.showInformationMessage('Editor is not active now');
