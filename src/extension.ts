@@ -1,7 +1,46 @@
 import * as vscode from 'vscode';
 
-function formatDocument(document: vscode.TextDocument): string {
+function formatIncludes(document: vscode.TextDocument): string {
 	let newText = "";
+	let includesSTD: string[] = [];
+	let includesLIB: string[] = [];
+	let processedLine = 0;
+	for(; processedLine < document.lineCount; processedLine++) {
+		let line = document.lineAt(processedLine);
+		if (line.text.startsWith("#include") && line.text.endsWith(">")) {
+			includesSTD.push(line.text);
+		} else if (line.text.startsWith("#include")) {
+			includesLIB.push(line.text);
+		} else if (line.isEmptyOrWhitespace) {
+			continue;
+		} else {
+			break;
+		}
+	}
+	includesSTD.sort();
+	includesLIB.sort();
+	for (let j = 0; j < includesSTD.length; j++) {
+		newText += includesSTD[j] + "\n";
+	}
+	newText += "\n";
+	for (let j = 0; j < includesLIB.length; j++) {
+		newText += includesLIB[j] + "\n";
+	}
+	newText += "\n\n";
+
+	for(; processedLine < document.lineCount; processedLine++) {
+		if (processedLine !== document.lineCount - 1) {
+			newText += document.lineAt(processedLine).text + "\n";
+		} else {
+			newText += document.lineAt(processedLine).text;
+		}
+	}
+
+	return newText;
+}
+
+function formatDocument(document: vscode.TextDocument): string {
+	let newText = formatIncludes(document);
 
 	if (!document.lineAt(document.lineCount - 1).isEmptyOrWhitespace) {
 		newText += "\n";
@@ -28,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			editBuilder.replace(range, newText);
 		});
-		
+
 		vscode.window.showInformationMessage('Hello World from labwork3!');
 	});
 
