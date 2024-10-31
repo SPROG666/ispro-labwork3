@@ -63,11 +63,73 @@ function formatBracket(text: string): string {
 	return text;
 }
 
+function isSubstr(text: string, pattern: string, index: number): boolean {
+	if (index + pattern.length <= text.length &&
+		text.substring(index, index + pattern.length) === pattern) {
+			return true;
+		}
+	return false;
+}
+
+function formatOperators(text: string): string {
+	let beginNotFormat = ["//", "/*", "'", '"'];
+	let endNotFormat = ["\n", "*/", "'", '"'];
+	let operators = ["<<=", ">>=", "==", "<<", ">>", "<=", ">=", "!=", "+=", "-=", "*=", "/=", "%=",
+		"&&", "||", "&", "|", "<", ">", "=", "+", "-", "*", "/", "%", ","];
+	let flag = -1;
+	for (let i = 0; i < text.length; i++) {
+		if(flag !== -1 && isSubstr(text, endNotFormat[flag], i)){
+			flag = -1;
+			continue;
+		}
+		for (let j = 0; j < beginNotFormat.length; j++) {
+			if (flag === -1 && isSubstr(text, beginNotFormat[j], i)) {
+				flag = j;
+				break;
+			}
+		}
+		if (flag === -1) {
+			if(isSubstr(text, "++", i) || isSubstr(text, "--", i)) {
+				i++;
+				continue;
+			}
+			for(let j = 0; j < operators.length; j++) {
+				if(isSubstr(text, operators[j], i)) {
+					let left = i - 1;
+					while (left > 0) {
+						if (text[left] !== " ") {
+							break;
+						}
+						left--;
+					}
+					let right = i + operators[j].length;
+					while (right < text.length) {
+						if (text[right] !== " ") {
+							break;
+						}
+						right++;
+					}
+					if(operators[j] === ',') {
+						text = text.slice(0, left + 1) + operators[j] + " " + text.slice(right);
+					}
+					else {
+						text = text.slice(0, left + 1) + " " + operators[j] + " " + text.slice(right);
+					}
+					i = left + operators[j].length + 2;
+					break;
+				}
+			}
+		}
+	}
+	return text;
+}
+
 function formatDocument(document: vscode.TextDocument): string {
 	let newText = formatIncludes(document);
 
 	newText = fromatElseIf(newText);
 	newText = formatBracket(newText);
+	newText = formatOperators(newText);
 	if (!document.lineAt(document.lineCount - 1).isEmptyOrWhitespace) {
 		newText += "\n";
 	}
