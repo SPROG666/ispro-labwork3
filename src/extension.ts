@@ -1,3 +1,4 @@
+
 import * as vscode from 'vscode';
 
 function formatIncludes(document: vscode.TextDocument): string {
@@ -72,8 +73,8 @@ function isSubstr(text: string, pattern: string, index: number): boolean {
 }
 
 function formatOperators(text: string): string {
-	let beginNotFormat = ["//", "/*", "'", '"'];
-	let endNotFormat = ["\n", "*/", "'", '"'];
+	let beginNotFormat = ["//", "/*", "'", '"', "#"];
+	let endNotFormat = ["\n", "*/", "'", '"', "\n"];
 	let operators = ["<<=", ">>=", "==", "<<", ">>", "<=", ">=", "!=", "+=", "-=", "*=", "/=", "%=",
 		"&&", "||", "&", "|", "<", ">", "=", "+", "-", "*", "/", "%", ","];
 	let flag = -1;
@@ -137,8 +138,8 @@ function countSpaces(text: string, index: number): string {
 }
 
 function formatSemicolon(text: string): string {
-	let beginNotFormat = ["//", "/*", "'", '"'];
-	let endNotFormat = ["\n", "*/", "'", '"'];
+	let beginNotFormat = ["//", "/*", "'", '"', "#"];
+	let endNotFormat = ["\n", "*/", "'", '"', "\n"];
 	let flag = -1;
 	for (let i = 0; i < text.length; i++) {
 		if(flag < -1 && text[i] === ";") {
@@ -207,7 +208,7 @@ function formatDocument(document: vscode.TextDocument): string {
 
 export function activate(context: vscode.ExtensionContext) {
 	
-	const disposable = vscode.commands.registerCommand('labwork3.runrunrun', () => {
+	const disposable = vscode.commands.registerCommand('labwork3.helloWorld', () => {
 		const activeEditor = vscode.window.activeTextEditor;
 		if(!activeEditor) {
 			vscode.window.showInformationMessage('Editor is not active now');
@@ -229,3 +230,4 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 }
+
