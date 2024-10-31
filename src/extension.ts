@@ -124,12 +124,80 @@ function formatOperators(text: string): string {
 	return text;
 }
 
+function countSpaces(text: string, index: number): string {
+	while(index > 0 && text[index] !== '\n') {
+		index--;
+	}
+	let new_index = index+1;
+	while (new_index<text.length && text[new_index] === " ") {
+		new_index++;
+	}
+	index++;
+	return text.slice(index, new_index);
+}
+
+function formatSemicolon(text: string): string {
+	let beginNotFormat = ["//", "/*", "'", '"'];
+	let endNotFormat = ["\n", "*/", "'", '"'];
+	let flag = -1;
+	for (let i = 0; i < text.length; i++) {
+		if(flag < -1 && text[i] === ";") {
+			let right = i + 1;
+			while (right < text.length) {
+				if (text[right] !== " ") {
+					break;
+				}
+				right++;
+			}
+			text = text.slice(0, i) + "; " + text.slice(right);
+			flag++;
+			i = i + 2;
+			continue;
+		}
+		if(flag<-1){
+			continue;
+		}
+		if(flag !== -1 && isSubstr(text, endNotFormat[flag], i)){
+			flag = -1;
+			continue;
+		}
+		for (let j = 0; j < beginNotFormat.length; j++) {
+			if (flag === -1 && isSubstr(text, beginNotFormat[j], i)) {
+				flag = j;
+				break;
+			}
+		}
+		if (flag === -1) {
+			if(isSubstr(text, "for", i)){
+				flag = -3;
+				continue;
+			}
+			let pat =  ";\n";
+			if(text[i] === ";" && !isSubstr(text, pat, i)) {
+				let right = i + 1;
+				while (right < text.length) {
+					if(text[right] !== " ") {
+						break;
+					}
+					right++;
+				}
+				let spaces = countSpaces(text, i);
+				text = text.slice(0, i) + ";\n" + spaces + text.slice(right);
+				i = i+2+spaces.length;
+			}
+		}
+	}
+
+	return text;
+}
+
 function formatDocument(document: vscode.TextDocument): string {
 	let newText = formatIncludes(document);
 
 	newText = fromatElseIf(newText);
 	newText = formatBracket(newText);
 	newText = formatOperators(newText);
+	newText = formatSemicolon(newText);
 	if (!document.lineAt(document.lineCount - 1).isEmptyOrWhitespace) {
 		newText += "\n";
 	}
